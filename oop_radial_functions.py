@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy
 import math
 from scipy.interpolate import interp1d
+import os
 
 N_COM = (180)
 R_CUT = float(6)
@@ -129,6 +130,9 @@ def SetOfBonds(array_mol, N_BONDS):
     for i in xrange(len(bonds_list)):
         if len(bonds_list[i]) == N_BONDS:
             new_set_mol.append(array_mol[i])
+            
+def SetOfMoleculesInCycles(file_pdb, out_file):
+    os.system ('./find_cycles < ' + file_pdb + ' > output_file')
     
 
                 
