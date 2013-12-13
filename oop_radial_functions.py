@@ -4,13 +4,6 @@ Created on Thu Nov 21 04:07:29 2013
 
 @author: katia
 """
-
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Nov 21 03:02:40 2013
-
-@author: katia
-"""
 from matplotlib import pyplot
 import matplotlib.pyplot as plt
 import numpy
@@ -36,8 +29,7 @@ class WaterMolecule(object):
         self.o_x, self.o_y, self.o_z = coords[0]
         self.h1_x, self.h1_y, self.h1_z = coords[1]
         self.h2_x, self.h2_y, self.h2_z = coords[2]
-
-            
+       
 
 def for_read(input_file):
     in_file = open(input_file, "r")
@@ -93,7 +85,7 @@ def HydrogeBondExist(wat_1, wat_2):
 
 
 def RadialDistrFuncAll(array_mol):
-    array_mol = []
+#    array_mol = []
     my_dict = {}
     x_axis, y_axis = [], []
  
@@ -147,7 +139,7 @@ def AngleValFunc(array_mol):
     my_dict_angle = {}
     for i in xrange(len(bonds_list)):
 #        if len(bonds_list[i]) == N_BONDS:
-        if len(bonds_list[i]) <100:
+#        if len(bonds_list[i]) <100:
             for k in bonds_list[i]:
                 vect_ik = napr(array_mol[i], array_mol[k])
                 num = bonds_list[i].index(k)+1
@@ -191,14 +183,14 @@ def AngleBetweenVectors(v1, v2):
   return math.acos(dotproduct(v1, v2) / (length(v1) * length(v2)))*180/pi
     
             
-def SomePlot(x_axis, y_axis):
+def SomePlot(x_axis, y_axis, legend):
 #        plt.bar(x_axis, y_axis,  width=x_axis[1]-x_axis[0])
         plt.plot(x_axis, y_axis, 'r-')
-
+        plt.legend(legend)
         #labels = [str(i/60) for i in x_axis]
         #plt.xticks(x_axis, labels)
-        my_title = "Radial Distribution Function"
-        plt.title(my_title)
+        #my_title = "Radial Distribution Function"
+        #plt.title(my_title)
         #plt.savefig(my_title+".png")
     
 
@@ -207,102 +199,27 @@ array_mol = classFactory(input_file)
 #x_axis, y_axis = RadialDistrFuncAll(array_mol)
 #SomePlot(x_axis, y_axis)
 
-N_BONDS = 4
+#N_BONDS = 5
 #x_ax, y_ax = AngleValFunc(array_mol, N_BONDS)
 #если хотим не просто весь array_mol - то надо,например, выделять молекулы, 
 #у которых по N_BONDS исходящих связей:
-new_array_mol = SetOfBonds(array_mol, N_BONDS)
 
-x_ax, y_ax = AngleValFunc(array_mol)
-x_smooth, y_smooth =  x_ax, y_ax
-for i in xrange(2):
-    x_smooth, y_smooth = moving_average(x_smooth, y_smooth, N = 2)
+x_dict, y_dict = {}, {}
+for N_BONDS in [3,4]:
+    new_array_mol = SetOfBonds(array_mol, N_BONDS)
 
-SomePlot(x_smooth, y_smooth)
+    x_ax, y_ax = AngleValFunc(array_mol)
+    x_smooth, y_smooth =  x_ax, y_ax
+    for i in xrange(2):
+        x_smooth, y_smooth = moving_average(x_smooth, y_smooth, N = 2)
+    x_dict[N_BONDS], y_dict[N_BONDS] = x_smooth, y_smooth
+SomePlot(x_dict[3], y_dict[3],str(3))
+SomePlot(x_dict[4], y_dict[4],str(4))        
+
+#SomePlot(x_smooth, y_smooth)
 #plt.figure()
 #plt.plot(, '--')
 
 
 plt.show()
    
-    
-def bonds():
-    oo, h_1, h_2 = for_read()
-    
-    ow_x_coord, ow_y_coord, ow_z_coord = [i[0] for i in oo], [i[1] for i in oo], [i[2] for i in oo]
-    hw1_x_coord, hw1_y_coord, hw1_z_coord = [i[0] for i in h_1], [i[1] for i in h_1], [i[2] for i in h_1]
-    hw2_x_coord, hw2_y_coord, hw2_z_coord = [i[0] for i in h_2], [i[1] for i in h_2], [i[2] for i in h_2]    
-    N_OX = len(oo)
-    print N_OX
-    angle = []    
-    
-    x_axis = []
-    y_axis = []
-    
-    x_axis_angle = []
-    y_axis_angle = []
-    
-    #width = 
-    my_dict = {}
-    my_dict_angle = {}
-    oo_hist = 0
-    g = [ [ 0 for j in xrange(N_OX) ] for i in xrange(N_OX) ]
-    for ii in xrange(N_OX):
-        for jj in xrange(N_OX):
-            if ii != jj :                
-                dist_oo = math.sqrt((ow_x_coord[ii] - ow_x_coord[jj])**2 + \
-                (ow_y_coord[ii] - ow_y_coord[jj])**2 + (ow_z_coord[ii] - ow_z_coord[jj])**2)
-                
-                dist_oo = int(dist_oo/width)*width
-                if dist_oo < R_CUT:
-                    if my_dict.has_key(dist_oo):
-                        my_dict[dist_oo] += 1
-                    else:
-                        my_dict[dist_oo] = 1
-                        
-                #смотрим на углы:
-#                if (dist1 < R_BOND_oh and dist_oo < R_BOND_oo):     
-                if 1==1:
-                    vec_oh = [hw1_x_coord[jj] - ow_x_coord[ii], hw1_y_coord[jj] - ow_y_coord[ii], hw1_z_coord[jj] - ow_z_coord[ii] ]
-                    vec_med = [(hw1_x_coord[jj] + hw2_x_coord[jj])/2, (hw1_y_coord[jj] + hw2_y_coord[jj])/2, (hw1_z_coord[jj] + hw2_z_coord[jj])/2]
-                    cosinus = (vec_oh[0]*vec_med[0]+vec_oh[1]*vec_med[1]+vec_oh[2]*vec_med[2])/math.sqrt(vec_oh[0]**2+vec_oh[1]**2+vec_oh[2]**2)/math.sqrt(vec_med[0]**2+vec_med[1]**2+vec_med[2]**2)
-                    angle.append(math.acos(cosinus)/pi*180) 
-#                elif (dist2 < R_BOND_oh and dist_oo < R_BOND_oo):  
-                if 1==1:
-                    vec_oh = [hw2_x_coord[jj] - ow_x_coord[ii], hw2_y_coord[jj] - ow_y_coord[ii], hw2_z_coord[jj] - ow_z_coord[ii] ]
-                    vec_med = [(hw1_x_coord[jj] + hw2_x_coord[jj])/2, (hw1_y_coord[jj] + hw2_y_coord[jj])/2, (hw1_z_coord[jj] + hw2_z_coord[jj])/2]
-                    cosinus = (vec_oh[0]*vec_med[0]+vec_oh[1]*vec_med[1]+vec_oh[2]*vec_med[2])/math.sqrt(vec_oh[0]**2+vec_oh[1]**2+vec_oh[2]**2)/math.sqrt(vec_med[0]**2+vec_med[1]**2+vec_med[2]**2)
-                    angle.append(math.acos(cosinus)/pi*180)  
-                
-    for cur_angle in angle:
-        cur_angle = int(cur_angle/width_angle)*width_angle
-        if my_dict_angle.has_key(cur_angle):
-            my_dict_angle[cur_angle] += 1
-        else:
-            my_dict_angle[cur_angle] = 1
-        
-    for ii in sorted(my_dict):
-        if ii:
-            my_dict[ii] /= 2
-            my_dict[ii] = my_dict[ii]/(4*pi*ii**2/(R_CUT/N_COM))
-            x_axis.append(ii)
-            y_axis.append(my_dict[ii]) 
-    
-    x_axis_angle = sorted(my_dict_angle)
-    y_axis_angle = [my_dict_angle[i] for i in x_axis_angle]
-        
-    
-    plt.subplot(2, 1, 1)
-    plt.plot(x_axis, y_axis, 'yo-')
-    plt.title('Radial Distribution Function')
-
-#
-    plt.subplot(2, 1, 2)
-    plt.plot(x_axis_angle, y_axis_angle, 'r.-')
-    plt.title("Angle Distribution Function")
-
-
-    plt.show()
-
-#bonds()             
-
